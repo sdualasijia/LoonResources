@@ -17,13 +17,12 @@ const oldTokens = [
 ];
 // ----------------
 
-const $ = new $loon.API();
 
 (async () => {
     if (!oldTokens || oldTokens.length === 0 || oldTokens[0].includes("c03c0f4908884fd1a1bc630bdd5a5280")) {
         console.log("❌ 未配置或使用了示例 token，请在脚本中填写你自己的 token 列表。");
-        $.notification.post("余杭人才码签到", "配置错误", "请编辑脚本并填写你的 token 列表。");
-        $.done();
+        $notification.post("余杭人才码签到", "配置错误", "请编辑脚本并填写你的 token 列表。");
+        $done();
         return;
     }
 
@@ -50,13 +49,13 @@ const $ = new $loon.API();
     }
 
     console.log("\n🎉 所有账户签到任务执行完毕。");
-    $.notification.post(
+    $notification.post(
         "余杭人才码签到完成", 
         `共处理 ${oldTokens.length} 个账户`,
         summaryMessages.join("\n")
     );
 
-    $.done();
+    $done();
 })();
 
 function getAccessToken(token) {
@@ -66,10 +65,11 @@ function getAccessToken(token) {
         "Accept": "*/*",
         "Sec-Fetch-Site": "cross-site",
         "Accept-Language": "zh-CN,zh-Hans;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
         "Sec-Fetch-Mode": "cors",
         "Content-Type": "application/json",
-        "Origin": "https://yhrcm.zzb.hzyuhang.cn:9443",
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 smkH5ContainerSDK/2.1.2 smkVersion/6.7.6",
+        "Origin": "https://yhrcm.zzb.hzyuhang.cn",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 smkH5ContainerSDK/2.1.2 smkVersion/6.7.18",
         "Referer": "https://yhrcm.zzb.hzyuhang.cn:9443/",
         "Sec-Fetch-Dest": "empty"
     };
@@ -79,12 +79,12 @@ function getAccessToken(token) {
     };
 
     return new Promise((resolve, reject) => {
-        $.post({ url, headers, body: JSON.stringify(body) }, (error, response, data) => {
+        $httpClient.post({ url, headers, body: JSON.stringify(body) }, (error, response, data) => {
             if (error) return reject(new Error(`获取 token 请求失败: ${error}`));
-            if (response.statusCode === 200) {
+            if (response.status === 200) {
                 try {
                     const jsonData = JSON.parse(data);
-                    if (jsonData.code === '0' && jsonData.data) {
+                    if (jsonData.respCode === '00' && jsonData.data) {
                         resolve(jsonData.data);
                     } else {
                         reject(new Error(`接口返回错误: ${jsonData.message || data}`));
@@ -93,38 +93,38 @@ function getAccessToken(token) {
                     reject(new Error(`解析 token 响应失败: ${e.message}`));
                 }
             } else {
-                reject(new Error(`响应状态码异常: ${response.statusCode}`));
+                reject(new Error(`响应状态码异常: ${response.status}`));
             }
         });
     });
 }
 
 function doSign(accessToken) {
-    const url = "https://yhrcm.zzb.hzyuhang.cn:9443/smkbusper/talent/1.0.0/sign";
+    const url = "https://yhrcm.zzb.hzyuhang.cn/smkbusper/talent/1.0.0/sign";
     const headers = {
-        "Host": "yhrcm.zzb.hzyuhang.cn:9443",
+        "Host": "yhrcm.zzb.hzyuhang.cn",
         "Accept": "*/*",
         "sendChl": "hzsmk.h5",
         "Sec-Fetch-Site": "same-origin",
         "Accept-Language": "zh-CN,zh-Hans;q=0.9",
         "Sec-Fetch-Mode": "cors",
         "Content-Type": "application/json;charset=UTF-8",
-        "Origin": "https://yhrcm.zzb.hzyuhang.cn:9443",
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 smkH5ContainerSDK/2.1.2 smkVersion/6.7.6",
+        "Origin": "https://yhrcm.zzb.hzyuhang.cn",
+        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 smkH5ContainerSDK/2.1.2 smkVersion/6.7.18",
         "sendClient": "hellohzsmk",
-        "Referer": "https://yhrcm.zzb.hzyuhang.cn:9443/yhtalentcard/yhtalentcard/index.html",
+        "Referer": "https://yhrcm.zzb.hzyuhang.cn/yhtalentcard/yhtalentcard/index.html",
         "Sec-Fetch-Dest": "empty"
     };
     const body = { "accessToken": accessToken };
 
     return new Promise((resolve, reject) => {
-        $.post({ url, headers, body: JSON.stringify(body) }, (error, response, data) => {
+        $httpClient.post({ url, headers, body: JSON.stringify(body) }, (error, response, data) => {
             if (error) return reject(new Error(`请求失败: ${error}`));
             
             try {
                 const jsonData = JSON.parse(data);
-                const message = jsonData.message || "未知响应";
-                if (jsonData.code === '0' || message.includes("已签到")) {
+                const message = jsonData.msg;
+                if (jsonData.code === 'PY0000' || message.includes("已签到")) {
                     resolve(message);
                 } else {
                     reject(new Error(message));
