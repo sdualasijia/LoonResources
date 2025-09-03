@@ -13,8 +13,7 @@ hostname = open.iconntech.com, yhrcm.zzb.hzyuhang.cn
 // 请在这里填入你所有需要签到的 token 列表
 // 每个 token 用双引号括起来，并用逗号隔开
 const oldTokens = [
-    "c03c0f4908884fd1a1bc630bdd5a5280", // 账户1的token (示例)
-    "another_token_for_account_2_xxxx"   // 账户2的token (请替换)
+    "dcbbc1f142844432900ab8a896f4c4f4"
 ];
 // ----------------
 
