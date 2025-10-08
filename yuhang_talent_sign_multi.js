@@ -13,7 +13,7 @@ hostname = open.iconntech.com, yhrcm.zzb.hzyuhang.cn
 // 请在这里填入你所有需要签到的 token 列表
 // 每个 token 用双引号括起来，并用逗号隔开
 const oldTokens = [
-    "dcbbc1f142844432900ab8a896f4c4f4",
+    "a5a0adc219ca481b8ddfe1f6b508ce02",
     "3b3f73863a72475abc22bd0cc8f8f53a"
 ];
 const names = [
