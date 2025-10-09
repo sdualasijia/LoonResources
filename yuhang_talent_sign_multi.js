@@ -14,7 +14,7 @@ hostname = open.iconntech.com, yhrcm.zzb.hzyuhang.cn
 // 每个 token 用双引号括起来，并用逗号隔开
 const oldTokens = [
     "a5a0adc219ca481b8ddfe1f6b508ce02",
-    "3b3f73863a72475abc22bd0cc8f8f53a"
+    "353238c2c6d2436f8fd949a2f9e76a0e"
 ];
 const names = [
     "liuyang",
