@@ -4,9 +4,6 @@
 # 余杭人才码签到 (多账户版)
 # ==================================
 cron "1 0 * * *" script-path=https://raw.githubusercontent.com/sdualasijia/LoonResources/refs/heads/main/yuhang_talent_sign_multi.js, timeout=120, tag=余杭人才码签到
-
-[MITM]
-hostname = open.iconntech.com, yhrcm.zzb.hzyuhang.cn
 */
 
 // --- 配置区域 ---
