@@ -10,7 +10,7 @@ cron "1 0 * * *" script-path=https://raw.githubusercontent.com/sdualasijia/LoonR
 // 请在这里填入你所有需要签到的 token 列表
 // 每个 token 用双引号括起来，并用逗号隔开
 const oldTokens = [
-    "5198460c4ae04592842c513bf7305d1c",
+    "cc64ef5c2efb4e6d953e1602762c12c9",
     "baa2fb0e6dcf4f8d862778a67bf4df80"
 ];
 const names = [
