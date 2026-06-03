@@ -11,7 +11,7 @@ cron "1 0 * * *" script-path=https://raw.githubusercontent.com/sdualasijia/LoonR
 // 每个 token 用双引号括起来，并用逗号隔开
 const oldTokens = [
     "cc64ef5c2efb4e6d953e1602762c12c9",
-    "baa2fb0e6dcf4f8d862778a67bf4df80"
+    "f5eb714615ca4dee8dbfcf1a98237ff1"
 ];
 const names = [
     "liuyang",
