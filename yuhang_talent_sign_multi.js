@@ -3,16 +3,16 @@
 # ==================================
 # 余杭人才码签到 (多账户版)
 # ==================================
-cron "1 0 * * *" script-path=https://raw.githubusercontent.com/sdualasijia/LoonResources/refs/heads/main/yuhang_talent_sign_multi.js, timeout=120, tag=余杭人才码签到
+cron "1 0 * * *" script-path=https://raw.githubusercontent.com/sdualasijia/LoonResources/main/yuhang_talent_sign_multi.js, timeout=120, tag=余杭人才码签到
 */
 
 // --- 配置区域 ---
-// 请在这里填入你所有需要签到的 token 列表
-// 每个 token 用双引号括起来，并用逗号隔开
-const oldTokens = [
-    "9933ed82b79f45b2ae3194fe7e74fd6c",
-    "88a6d66161494eb3b363c5168c33e290"
-];
+// oldTokens 通过 BoxJs 写入 Loon 持久化存储，多个 token 使用 @ 分隔
+const TOKEN_STORE_KEY = "yuhang_talent_old_tokens";
+const oldTokens = ($persistentStore.read(TOKEN_STORE_KEY) || "")
+    .split("@")
+    .map(token => token.trim())
+    .filter(Boolean);
 const names = [
     "liuyang",
     "wangchangyuan"
@@ -21,9 +21,9 @@ const names = [
 
 
 (async () => {
-    if (!oldTokens || oldTokens.length === 0 || oldTokens[0].includes("c03c0f4908884fd1a1bc630bdd5a5280")) {
-        console.log("❌ 未配置或使用了示例 token，请在脚本中填写你自己的 token 列表。");
-        $notification.post("余杭人才码签到", "配置错误", "请编辑脚本并填写你的 token 列表。");
+    if (oldTokens.length === 0) {
+        console.log("❌ 未配置 token，请在 BoxJs 中填写 oldTokens。");
+        $notification.post("余杭人才码签到", "配置错误", "请在 BoxJs 中配置 oldTokens。");
         $done();
         return;
     }
@@ -34,30 +34,30 @@ const names = [
     let info = '';
     for (let i = 0; i < oldTokens.length; i++) {
         const currentToken = oldTokens[i];
-        const accountNumber = i ;
+        const accountName = names[i] || `账户${i + 1}`;
         
-        console.log(`\n--- 开始为账户 ${names[accountNumber]} 签到 ---`);
+        console.log(`\n--- 开始为账户 ${accountName} 签到 ---`);
         try {
-            console.log(`[${names[accountNumber]}] 正在获取 accessToken...`);
+            console.log(`[${accountName}] 正在获取 accessToken...`);
             const accessToken = await getAccessToken(currentToken);
             
-            console.log(`[${names[accountNumber]}] 成功获取 accessToken...✅`);
-            console.log(`[${names[accountNumber]}] 查看是否已经签到...`);
+            console.log(`[${accountName}] 成功获取 accessToken...✅`);
+            console.log(`[${accountName}] 查看是否已经签到...`);
             const signFlag = await getSignFlag(accessToken);
             if (signFlag === '2') { // 已签到
-                console.log(`[${names[accountNumber]}] 今日已签到，无需重复签到...✅`);
-                summaryMessages.push(`[${names[accountNumber]}]: 今日已签到...✅`);
+                console.log(`[${accountName}] 今日已签到，无需重复签到...✅`);
+                summaryMessages.push(`[${accountName}]: 今日已签到...✅`);
                 continue;
             } else {
-                console.log(`ℹ️ [${names[accountNumber]}] 今日尚未签到，继续执行签到操作...`);
+                console.log(`ℹ️ [${accountName}] 今日尚未签到，继续执行签到操作...`);
             }
-            console.log(`[${names[accountNumber]}] 正在执行签到...`);
+            console.log(`[${accountName}] 正在执行签到...`);
             const signResult = await doSign(accessToken);
-            summaryMessages.push(`[${names[accountNumber]}]: ${signResult}`);
+            summaryMessages.push(`[${accountName}]: ${signResult}`);
         } catch (error) {
             flag = false;
-            console.log(`❌ [${names[accountNumber]}] 签到失败: ${error.message}`);
-            summaryMessages.push(`[${names[accountNumber]}]: 失败 ❌ (${error.message})`);
+            console.log(`❌ [${accountName}] 签到失败: ${error.message}`);
+            summaryMessages.push(`[${accountName}]: 失败 ❌ (${error.message})`);
         }
     }
     if (flag) {
